@@ -8,6 +8,7 @@ using TransactionApi.Server.Data;
 using TransactionApi.Server.Data.Entities;
 using TransactionApi.Server.Services.Interfaces;
 using TransactionApi.Shared.Dto;
+using TransactionApi.Shared.Enums;
 
 namespace TransactionApi.Server.Services
 {
@@ -67,15 +68,11 @@ namespace TransactionApi.Server.Services
                 }
                 if (!string.IsNullOrEmpty(query.Status))
                 {
-                    dbSet = dbSet.Where(tr => tr.Status == query.Status);
+                    var dbStatus = (TransactionStatus) Enum.Parse(typeof(TransactionStatus),query.Status);
+                    dbSet = dbSet.Where(tr => tr.Status == dbStatus);
                 }
 
-                return await dbSet.Select(tr => new TransactionDto()
-                {
-                    Id = tr.TransactionId,
-                    Payment = $"{tr.Amount} {tr.Currency}",
-                    Status = tr.Status
-                }).ToListAsync();
+                return await dbSet.Select(tr => tr.ToDto()).ToListAsync();
             }
             catch(Exception ex)
             {
