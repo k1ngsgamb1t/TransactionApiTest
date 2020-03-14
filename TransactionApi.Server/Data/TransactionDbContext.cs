@@ -7,6 +7,11 @@ namespace TransactionApi.Server.Data
     {
         public virtual DbSet<Transaction> Transaction { get; set; }
 
+        public TransactionDbContext(DbContextOptions<TransactionDbContext> options)
+            : base(options)
+        {
+            
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
