@@ -1,15 +1,15 @@
 ﻿@page "/uploaddata"
 @using System.IO
-@inject HttpClient client
+@inject HttpClient Client
 
 <h1>Upload transactions</h1>
 
 <p>Supported file types: xml,csv</p>
 
-<InputFile class="btn btn-primary" onChange="HandleSelectedFile">Upload</InputFile>
+<InputFile OnChange="HandleSelection" accept=".xml, .csv">Upload</InputFile>
 
 @code {
-    public async Task HandleSelectedFile(IFileListEntry[] fileEntries)
+    async Task HandleSelection(IFileListEntry[] fileEntries)
     {
         var file = fileEntries.FirstOrDefault();
         if (file != null)
@@ -23,7 +23,7 @@
                 { new StringContent(file.Name), "\"name\""},
                 { new ByteArrayContent(ms.GetBuffer()), "\"content\"", file.Name }
             };
-            await client.PostAsync("api/transactions/upload", content);
+            await Client.PostAsync("api/transactions/upload", content);
         }
     }
 }
