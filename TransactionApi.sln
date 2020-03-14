@@ -8,6 +8,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TransactionApi.Client", "Tr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TransactionApi.Shared", "TransactionApi.Shared\TransactionApi.Shared.csproj", "{3CDFFB82-D480-4070-9D0A-8538F1A7EE6D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionApi.Tests", "TransactionApi.Tests\TransactionApi.Tests.csproj", "{2522708A-27CC-472B-A37F-B03888A93D64}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,6 +56,18 @@ Global
 		{3CDFFB82-D480-4070-9D0A-8538F1A7EE6D}.Release|x64.Build.0 = Release|Any CPU
 		{3CDFFB82-D480-4070-9D0A-8538F1A7EE6D}.Release|x86.ActiveCfg = Release|Any CPU
 		{3CDFFB82-D480-4070-9D0A-8538F1A7EE6D}.Release|x86.Build.0 = Release|Any CPU
+		{2522708A-27CC-472B-A37F-B03888A93D64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2522708A-27CC-472B-A37F-B03888A93D64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2522708A-27CC-472B-A37F-B03888A93D64}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2522708A-27CC-472B-A37F-B03888A93D64}.Debug|x64.Build.0 = Debug|Any CPU
+		{2522708A-27CC-472B-A37F-B03888A93D64}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2522708A-27CC-472B-A37F-B03888A93D64}.Debug|x86.Build.0 = Debug|Any CPU
+		{2522708A-27CC-472B-A37F-B03888A93D64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2522708A-27CC-472B-A37F-B03888A93D64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2522708A-27CC-472B-A37F-B03888A93D64}.Release|x64.ActiveCfg = Release|Any CPU
+		{2522708A-27CC-472B-A37F-B03888A93D64}.Release|x64.Build.0 = Release|Any CPU
+		{2522708A-27CC-472B-A37F-B03888A93D64}.Release|x86.ActiveCfg = Release|Any CPU
+		{2522708A-27CC-472B-A37F-B03888A93D64}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
