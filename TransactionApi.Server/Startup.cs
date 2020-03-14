@@ -9,9 +9,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using Swashbuckle.AspNetCore.Swagger;
+using TransactionApi.Server.Data;
 
 namespace TransactionApi.Server
 {
@@ -28,6 +30,10 @@ namespace TransactionApi.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<TransactionDbContext>(options =>
+            {
+                options.UseNpgsql("dummy connection string");
+            });
             services.AddSwaggerGen(sw =>
             {
                 sw.SwaggerDoc("v1", new OpenApiInfo { Title = "TransactionAPI", Version = "v1" });
