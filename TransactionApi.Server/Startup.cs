@@ -14,6 +14,8 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using Swashbuckle.AspNetCore.Swagger;
 using TransactionApi.Server.Data;
+using TransactionApi.Server.Services;
+using TransactionApi.Server.Services.Interfaces;
 
 namespace TransactionApi.Server
 {
@@ -41,6 +43,9 @@ namespace TransactionApi.Server
                 var xmlFiles = Directory.GetFiles(AppContext.BaseDirectory, "*.xml", SearchOption.TopDirectoryOnly).ToList();
                 xmlFiles.ForEach(xmlFile => sw.IncludeXmlComments(xmlFile));
             });
+            services.AddScoped<ITransactionService, TransactionService>();
+            services.AddTransient<ITransactionParser, CsvTransactionParser>();
+            services.AddTransient<ITransactionParser, XmlTransactionParser>();
             services.AddControllersWithViews();
         }
 

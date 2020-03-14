@@ -23,12 +23,12 @@ namespace TransactionApi.Server.Services
             _logger = logger;
         }
         
-        public async Task ProcessTransactionsAsync(IEnumerable<Transaction> transactions)
+        public async Task ProcessTransactionsAsync(IAsyncEnumerable<Transaction> transactions)
         {
             await using var tr = await _dbContext.Database.BeginTransactionAsync();
             try
             {
-                foreach (var trItem in transactions)
+                await foreach (var trItem in transactions)
                 {
                     var trEntity = await _dbContext.Transaction.FindAsync(trItem);
                     if (trEntity != null)

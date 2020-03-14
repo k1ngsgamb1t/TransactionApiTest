@@ -7,7 +7,7 @@ namespace TransactionApi.Server.Services.Interfaces
 {
     public interface ITransactionService
     {
-        Task ProcessTransactionsAsync(IEnumerable<Transaction> transactions);
+        Task ProcessTransactionsAsync(IAsyncEnumerable<Transaction> transactions);
         Task<IEnumerable<TransactionDto>> QueryTransactionsAsync(TransactionQuery query);
     }
 }
