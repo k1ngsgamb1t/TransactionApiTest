@@ -49,6 +49,7 @@ namespace TransactionApi.Server.Services
             {
                 TransactionId = this.TransactionIdentificator,
                 Amount = this.Amount,
+                Currency = this.CurrencyCode,
                 TransactionDate = this.TransactionDate,
                 Status = this.Status.ToModelStatus()
             };
