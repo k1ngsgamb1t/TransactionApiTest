@@ -34,7 +34,7 @@ namespace TransactionApi.Server
         {
             services.AddDbContext<TransactionDbContext>(options =>
             {
-                options.UseNpgsql("dummy connection string");
+                options.UseNpgsql(Configuration.GetConnectionString("DbConnection"));
             });
             services.AddSwaggerGen(sw =>
             {
@@ -82,12 +82,21 @@ namespace TransactionApi.Server
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            
+            RunMigrations(app);
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 endpoints.MapFallbackToFile("index.html");
             });
+        }
+
+        private static void RunMigrations(IApplicationBuilder app)
+        {
+            using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
+            var dbContext = serviceScope.ServiceProvider.GetService<TransactionDbContext>();
+            dbContext.Database.Migrate();
         }
     }
 }
