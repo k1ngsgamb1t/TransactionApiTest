@@ -1,6 +1,7 @@
 ﻿using TransactionApi.Shared.Dto;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using TransactionApi.Server.Helpers;
 using TransactionApi.Server.Services.Interfaces;
+using TransactionApi.Server.Validations;
 
 namespace TransactionApi.Server.Controllers
 {
@@ -42,12 +44,33 @@ namespace TransactionApi.Server.Controllers
             {
                 using (var reader = new StreamReader(transactionsSource.Content.OpenReadStream()))
                 {
-                    if(transactionsSource.Name.EndsWith("csv"))
-                        await _transactionService.ProcessTransactionsAsync(_csvParser.Parse(reader));
+                    if (transactionsSource.Name.EndsWith(".csv"))
+                    {
+                        var transactionItems = _csvParser.Parse(reader);
+                        var validationMap = new Dictionary<string, List<ValidationResult>>();
+                        if(await ValidationHelper.TryValidateObjectsWithKey(transactionItems,
+                            (xmlItem) => xmlItem.TransactionId,
+                            validationMap))
+                            await _transactionService.ProcessTransactionsAsync(transactionItems);
+                        else
+                        {
+                            return BadRequest(validationMap);
+                        }
+                    }
                     else
-                        await _transactionService.ProcessTransactionsAsync(_xmlParser.Parse(reader));
+                    {
+                        var transactionItems = _xmlParser.Parse(reader);
+                        var validationMap = new Dictionary<string, List<ValidationResult>>();
+                        if(await ValidationHelper.TryValidateObjectsWithKey(transactionItems,
+                            (xmlItem) => xmlItem.TransactionId,
+                            validationMap))
+                            await _transactionService.ProcessTransactionsAsync(transactionItems);
+                        else
+                        {
+                            return BadRequest(validationMap);
+                        }
+                    }
                 }
-                
                 return Ok();
             }
             catch (Exception ex)
