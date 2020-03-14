@@ -1,0 +1,29 @@
+﻿@page "/uploaddata"
+@using System.IO
+@inject HttpClient client
+
+<h1>Upload transactions</h1>
+
+<p>Supported file types: xml,csv</p>
+
+<InputFile class="btn btn-primary" onChange="HandleSelectedFile">Upload</InputFile>
+
+@code {
+    public async Task HandleSelectedFile(IFileListEntry[] fileEntries)
+    {
+        var file = fileEntries.FirstOrDefault();
+        if (file != null)
+        {
+            var ms = new MemoryStream();
+            await file.Data.CopyToAsync(ms);
+
+            //status = $"Finished loading {file.Size} bytes from {file.Name}";
+            
+            var content = new MultipartFormDataContent {
+                { new StringContent(file.Name), "\"name\""},
+                { new ByteArrayContent(ms.GetBuffer()), "\"content\"", file.Name }
+            };
+            await client.PostAsync("api/transactions/upload", content);
+        }
+    }
+}

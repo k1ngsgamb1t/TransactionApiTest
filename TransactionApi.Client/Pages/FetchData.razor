@@ -5,12 +5,16 @@
 
 <h1>Available transactions</h1>
 
+<input type="text" onchange="@CurrencyCode">Type currency code:<input/>
+<DateRangePicker @bind-StartDate="StartDate" @bind-EndDate="EndDate" />
+<select bind="@SelectedStatus">
+    <option>A</option>
+    <option>R</option>
+    <option>D</option>
+</select>
+<button onclick="OnQueryExecuting">Run Query</button>
 
-@if (_transactions == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
+@if (_transactions != null)
 {
     <table class="table">
         <thead>
@@ -35,10 +39,22 @@ else
 
 @code {
     private TransactionDto[] _transactions;
+    string SelectedStatus = string.Empty;
+    string CurrencyCode = string.Empty;
+    DateTimeOffset? StartDate { get; set; } = DateTime.Today.AddMonths(-1);
+    DateTimeOffset? EndDate { get; set; } = DateTime.Today.AddDays(1).AddTicks(-1);
 
-    protected override async Task OnInitializedAsync()
+    public async Task OnQueryExecuting()
     {
-        _transactions = await Http.GetJsonAsync<TransactionDto[]>("api/transactions");
+        var query = new TransactionQuery()
+        {
+            CurrencyCode = CurrencyCode,
+            StartTime = StartDate.Value.Date,
+            EndTime = EndDate.Value.Date,
+            Status = SelectedStatus
+        };
+        _transactions = await Http.GetJsonAsync<TransactionDto[]>("api/transactions" + query.ToQueryString());
+        StateHasChanged();
     }
 
 }
