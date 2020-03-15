@@ -7,6 +7,6 @@ namespace TransactionApi.Shared.Dto
     {
         public string Id { get; set; }
         public string Payment { get; set; }
-        public TransactionStatus Status { get; set; }
+        public string Status { get; set; }
     }
 }

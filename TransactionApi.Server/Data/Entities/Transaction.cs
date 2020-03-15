@@ -18,7 +18,7 @@ namespace TransactionApi.Server.Data.Entities
             {
                 Id = this.TransactionId,
                 Payment = $"{this.Amount} {this.Currency}",
-                Status = this.Status
+                Status = this.Status.ToString()
             };
         }
     }
