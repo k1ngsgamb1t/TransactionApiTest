@@ -49,7 +49,7 @@ namespace TransactionApi.Server.Controllers
                         var transactionItems = _csvParser.Parse(reader);
                         var validationMap = new Dictionary<string, List<ValidationResult>>();
                         if(await ValidationHelper.TryValidateObjectsWithKey(transactionItems,
-                            (xmlItem) => xmlItem.TransactionId,
+                            (csvItem) => csvItem.TransactionId,
                             validationMap))
                             await _transactionService.ProcessTransactionsAsync(transactionItems);
                         else

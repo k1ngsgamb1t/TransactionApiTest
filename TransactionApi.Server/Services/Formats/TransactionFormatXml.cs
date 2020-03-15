@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
+using System.Xml.Serialization;
 using TransactionApi.Server.Data.Entities;
 using TransactionApi.Server.Validations;
 
-namespace TransactionApi.Server.Services
+namespace TransactionApi.Server.Services.Formats
 {
     public enum TransactionStatusXml
     {
@@ -15,18 +16,28 @@ namespace TransactionApi.Server.Services
         Finished = 2
     }
     
+    [Serializable]
+    [XmlRoot("Transaction")]
     public class TransactionFormatXml : IValidatableObject
     {
+        [Serializable]
         public class PaymentDetailsInfo
         {
+            [XmlElement]
             public decimal Amount { get; set; }
+            
+            [XmlElement]
             [StringLength(3, ErrorMessage = "Currency code must be 3 characters long")]
             public string CurrencyCode { get; set; }
         }
         [StringLength(50, MinimumLength = 1,ErrorMessage = "Transaction id must be at least 1 and not more than 50 characters long")]
+        [XmlAttribute("id")]
         public string TransactionIdentificator { get; set; }
+        [XmlElement("PaymentDetails")]
         public PaymentDetailsInfo PaymentDetails { get; set; }
+        [XmlElement]
         public string TransactionDate { get; set; }
+        [XmlElement]
         public string Status { get; set; }
         
         public Transaction ToTransactionModel()
@@ -54,15 +65,11 @@ namespace TransactionApi.Server.Services
             {
                 results.Add(new ValidationResult("Currency code is not of ISO4217 format"));
             }
-
             if (!ValidationHelper.IsValidXmlStatus(this.Status))
             {
                 results.Add((new ValidationResult("Invalid transaction status")));
             }
-            
             return results;
-
-            
         }
     }
 }

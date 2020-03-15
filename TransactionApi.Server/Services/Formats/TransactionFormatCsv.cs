@@ -7,7 +7,7 @@ using TransactionApi.Server.Data.Entities;
 using TransactionApi.Server.Validations;
 using TransactionApi.Shared.Enums;
 
-namespace TransactionApi.Server.Services
+namespace TransactionApi.Server.Services.Formats
 {
     public enum TransactionStatusCsv
     {
@@ -16,35 +16,11 @@ namespace TransactionApi.Server.Services
         Done = 2
     }
 
-    public static class TransactionStatusExtensions
-    {
-        public static TransactionStatus ToModelStatus(this TransactionStatusCsv status)
-        {
-            return status switch
-            {
-                TransactionStatusCsv.Approved => TransactionStatus.A,
-                TransactionStatusCsv.Rejected => TransactionStatus.R,
-                TransactionStatusCsv.Done => TransactionStatus.D,
-                _ => throw new InvalidOperationException("Incorrect csv status")
-            };
-        }
-        public static TransactionStatus ToModelStatus(this TransactionStatusXml status)
-        {
-            return status switch
-            {
-                TransactionStatusXml.Approved => TransactionStatus.A,
-                TransactionStatusXml.Failed => TransactionStatus.R,
-                TransactionStatusXml.Finished => TransactionStatus.D,
-                _ => throw new InvalidOperationException("Incorrect xml status")
-            };
-        }
-    }
-    
     public class TransactionFormatCsv : IValidatableObject
     {
         [StringLength(50, MinimumLength = 1,ErrorMessage = "Transaction id must be at least 1 and not more than 50 characters long")]
         public string TransactionIdentificator { get; set; }
-        public decimal Amount { get; set; }
+        public string Amount { get; set; }
         [StringLength(3, ErrorMessage = "Currency code must be 3 characters long")]
         public string CurrencyCode { get; set; }
         public string TransactionDate { get; set; }
@@ -55,7 +31,7 @@ namespace TransactionApi.Server.Services
             return new Transaction()
             {
                 TransactionId = this.TransactionIdentificator,
-                Amount = this.Amount,
+                Amount = Decimal.Parse(this.Amount, CultureInfo.InvariantCulture),
                 Currency = this.CurrencyCode,
                 TransactionDate = DateTime.ParseExact(this.TransactionDate, "dd/MM/yyyy hh:mm:ss",
                     CultureInfo.InvariantCulture,
@@ -75,15 +51,11 @@ namespace TransactionApi.Server.Services
             {
                 results.Add(new ValidationResult("Currency code is not of ISO4217 format"));
             }
-
             if (!ValidationHelper.IsValidCsvStatus(this.Status))
             {
                 results.Add((new ValidationResult("Invalid transaction status")));
             }
-            
             return results;
-
-           
         }
     }
 }

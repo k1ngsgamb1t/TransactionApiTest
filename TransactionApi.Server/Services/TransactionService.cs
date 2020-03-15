@@ -33,7 +33,7 @@ namespace TransactionApi.Server.Services
                     var trEntity = await _dbContext.Transaction.FindAsync(trItem);
                     if (trEntity != null)
                     {
-                        _dbContext.Transaction.Update(trEntity);
+                        _dbContext.Transaction.Update(trItem);
                     }
                     else
                     {

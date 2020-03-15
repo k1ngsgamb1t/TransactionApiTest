@@ -3,9 +3,11 @@ using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using CsvHelper;
+using CsvHelper.Configuration;
 using Newtonsoft.Json;
 using TransactionApi.Server.Data.Entities;
 using TransactionApi.Server.Services.Interfaces;
+using TransactionApi.Server.Services.Formats;
 
 namespace TransactionApi.Server.Services
 {
@@ -13,7 +15,14 @@ namespace TransactionApi.Server.Services
     {
         public async IAsyncEnumerable<Transaction> Parse(StreamReader sourceString)
         {
-            using var csvReader = new CsvReader(sourceString, CultureInfo.InvariantCulture);
+            using var csvReader = new CsvReader(sourceString, new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HasHeaderRecord = false,
+                IgnoreQuotes = false,
+                Delimiter = ",",
+                Quote = '"'
+            });
+
             var csvTransaction = new TransactionFormatCsv();
             await foreach (var csvItem in csvReader.EnumerateRecordsAsync<TransactionFormatCsv>(csvTransaction))
             {
