@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Xml.Serialization;
 using TransactionApi.Server.Data.Entities;
+using TransactionApi.Server.Services.Interfaces;
 using TransactionApi.Server.Validations;
 
 namespace TransactionApi.Server.Services.Formats
@@ -25,7 +26,7 @@ namespace TransactionApi.Server.Services.Formats
     
     [Serializable]
     [XmlRoot("Transaction")]
-    public class TransactionFormatXml : IValidatableObject
+    public class TransactionFormatXml : ITransactionFormat, IValidatableObject
     {
         public class PaymentDetailsInfo
         {
@@ -45,7 +46,14 @@ namespace TransactionApi.Server.Services.Formats
         public string TransactionDate { get; set; }
         [XmlElement]
         public string Status { get; set; }
-        
+
+        public string GetItemId()
+        {
+            return string.IsNullOrEmpty(TransactionIdentificator)
+                ? $"{PaymentDetails.Amount}:{PaymentDetails.CurrencyCode}:{TransactionDate}:{Status}"
+                : TransactionIdentificator;
+        }
+
         public Transaction ToTransactionModel()
         {
             return new Transaction()

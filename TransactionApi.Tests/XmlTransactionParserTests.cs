@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TransactionApi.Server.Services;
 using TransactionApi.Server.Services.Interfaces;
+using TransactionApi.Server.Validations;
 using TransactionApi.Shared.Enums;
 using Xunit;
 
@@ -17,10 +18,12 @@ namespace TransactionApi.Tests
         }
 
         private readonly ITransactionParser _xmlParser;
+        private readonly ITransactionItemValidator _validator;
 
         public XmlTransactionParserTests()
         {
-            _xmlParser = new XmlTransactionParser();
+            _validator = new TransactionItemValidator();
+            _xmlParser = new XmlTransactionParser(_validator);
         }
 
         [Fact]

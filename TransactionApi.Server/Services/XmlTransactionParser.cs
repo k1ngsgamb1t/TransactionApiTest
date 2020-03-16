@@ -8,14 +8,20 @@ using TransactionApi.Server.Data.Entities;
 using TransactionApi.Server.Exceptions;
 using TransactionApi.Server.Services.Interfaces;
 using TransactionApi.Server.Services.Formats;
+using TransactionApi.Server.Validations;
 
 namespace TransactionApi.Server.Services
 {
     public class XmlTransactionParser : ITransactionParser
     {
         public string SupportedExtension { get; } = "xml";
-        private readonly Dictionary<string, List<ValidationResult>> _validationMap =
-        new Dictionary<string, List<ValidationResult>>();
+
+        private readonly ITransactionItemValidator _validator;
+
+        public XmlTransactionParser(ITransactionItemValidator validator)
+        {
+            _validator = validator;
+        }
 
         public async IAsyncEnumerable<Transaction> Parse(StreamReader sourceString)
         {
@@ -23,16 +29,10 @@ namespace TransactionApi.Server.Services
             var list = (TransactionsList) xmlSerializer.Deserialize(sourceString);
             foreach (var xmlItem in list.Transactions)
             {
-                var validationResults = new List<ValidationResult>();
-                if(Validator.TryValidateObject(xmlItem, new ValidationContext(xmlItem), validationResults))
+                if (_validator.TryValidateItem(xmlItem))
                     yield return await Task.FromResult(xmlItem.ToTransactionModel());
-                else
-                {
-                    _validationMap[$"record [{xmlItem.TransactionIdentificator}, {xmlItem.Status}, {xmlItem.TransactionDate}], {xmlItem.PaymentDetails.Amount}, {xmlItem.PaymentDetails.CurrencyCode}"] = validationResults;
-                }
-                if(_validationMap.Keys.Count > 0)
-                    throw new InvalidFileDataException(_validationMap);
             }
+            _validator.ThrowIfValidationEverFailed();
         }
     }
 }

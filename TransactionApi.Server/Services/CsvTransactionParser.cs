@@ -21,6 +21,13 @@ namespace TransactionApi.Server.Services
         private readonly Dictionary<string, List<ValidationResult>> _validationMap =
             new Dictionary<string, List<ValidationResult>>();
 
+        private ITransactionItemValidator _validator;
+
+        public CsvTransactionParser(ITransactionItemValidator validator)
+        {
+            _validator = validator;
+        }
+
         public async IAsyncEnumerable<Transaction> Parse(StreamReader sourceString)
         {
             using var csvReader = new CsvReader(sourceString, new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -32,23 +39,15 @@ namespace TransactionApi.Server.Services
                 CountBytes = true,
                 Encoding = Encoding.UTF8
             });
-            
-            var lineNum = 1;
+
             while (await csvReader.ReadAsync())
             {
                 var csvItem = csvReader.GetRecord<TransactionFormatCsv>();
                 var validationResults = new List<ValidationResult>();
-                if(Validator.TryValidateObject(csvItem, new ValidationContext(csvItem), validationResults))
+                if(_validator.TryValidateItem(csvItem))
                     yield return csvItem.ToTransactionModel();
-                else
-                {
-                    _validationMap[$"line {lineNum}"] = validationResults;
-                }
-                lineNum++;
             }
-            
-            if(_validationMap.Keys.Count > 0)
-                throw new InvalidFileDataException(_validationMap);
+            _validator.ThrowIfValidationEverFailed();
         }
     }
 }

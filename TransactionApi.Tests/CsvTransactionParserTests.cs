@@ -6,6 +6,7 @@ using CsvHelper;
 using TransactionApi.Server.Services;
 using Xunit;
 using TransactionApi.Server.Services.Interfaces;
+using TransactionApi.Server.Validations;
 using TransactionApi.Shared.Enums;
 
 namespace TransactionApi.Tests
@@ -17,11 +18,13 @@ namespace TransactionApi.Tests
             public const string File_CorrectCsvData = @"TestData/transactionsCsv.csv";
         }
 
-        private ITransactionParser _csvParser;
+        private readonly ITransactionParser _csvParser;
+        private readonly ITransactionItemValidator _validator;
 
         public CsvTransactionParserTests()
         {
-            _csvParser = new CsvTransactionParser();
+            _validator = new TransactionItemValidator();
+            _csvParser = new CsvTransactionParser(_validator);
         }
 
         [Fact]

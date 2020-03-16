@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using TransactionApi.Server.Data.Entities;
+using TransactionApi.Server.Services.Interfaces;
 using TransactionApi.Server.Validations;
 using TransactionApi.Shared.Enums;
 
@@ -16,7 +17,7 @@ namespace TransactionApi.Server.Services.Formats
         Finished = 2
     }
 
-    public class TransactionFormatCsv : IValidatableObject
+    public class TransactionFormatCsv : ITransactionFormat, IValidatableObject
     {
         [StringLength(50, MinimumLength = 1,ErrorMessage = "Transaction id must be at least 1 and not more than 50 characters long")]
         public string TransactionIdentificator { get; set; }
@@ -25,6 +26,13 @@ namespace TransactionApi.Server.Services.Formats
         public string CurrencyCode { get; set; }
         public string TransactionDate { get; set; }
         public string Status { get; set; }
+
+        public string GetItemId()
+        {
+            return string.IsNullOrEmpty(TransactionIdentificator)
+                ? $"{Amount}:{CurrencyCode}:{TransactionDate}:{Status}"
+                : TransactionIdentificator;
+        }
 
         public Transaction ToTransactionModel()
         {
