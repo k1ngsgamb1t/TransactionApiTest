@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using TransactionApi.Server.Data.Entities;
 using TransactionApi.Server.Services.Interfaces;
 using TransactionApi.Server.Validations;
@@ -59,6 +60,8 @@ namespace TransactionApi.Server.Services.Formats
             {
                 results.Add(new ValidationResult("Currency code is not of ISO4217 format"));
             }
+            //some strange issue - last record in csv file is broken - need to manually fix
+            this.Status = new Regex("[^a-zA-Z0-9 -]").Replace(this.Status, "");
             if (!ValidationHelper.IsValidCsvStatus(this.Status))
             {
                 results.Add((new ValidationResult("Invalid transaction status")));

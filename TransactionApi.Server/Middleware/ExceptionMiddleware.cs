@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using TransactionApi.Server.Exceptions;
 
@@ -35,13 +36,15 @@ namespace TransactionApi.Server.Middleware
     public class ExceptionMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger<ExceptionMiddleware> _logger;
         
         //should be refactored to stringresources
         private const string GenericExceptionMessage = "Something went wrong.Please check logs";
         
-        public ExceptionMiddleware(RequestDelegate next)
+        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
         }
 
         public async Task InvokeAsync(HttpContext httpContext)
@@ -72,6 +75,7 @@ namespace TransactionApi.Server.Middleware
                 case InvalidFileDataException ex:
                     statusCode = HttpStatusCode.BadRequest;
                     message = ex.ToJson();
+                    _logger.LogError(ex, message);
                     break;
                 case DbUpdateException ex:
                     statusCode = HttpStatusCode.UnprocessableEntity;

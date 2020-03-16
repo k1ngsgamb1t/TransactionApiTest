@@ -28,7 +28,7 @@ namespace TransactionApi.Server.Validations
         
         public static bool IsValidXmlDate(string dateString)
         {
-            return DateTime.TryParseExact(dateString, "yyyy-MM-ddThh:mm:ss",
+            return DateTime.TryParseExact(dateString, "yyyy-MM-ddTHH:mm:ss",
                 CultureInfo.InvariantCulture,
                 DateTimeStyles.None,
                 out _);
@@ -38,7 +38,7 @@ namespace TransactionApi.Server.Validations
         {
             var currencySymbols = CultureInfo
                 .GetCultures(CultureTypes.SpecificCultures) //Only specific cultures contain region information
-                .Select(x => (new RegionInfo(x.LCID)).ISOCurrencySymbol)
+                .Select(x => (new RegionInfo(x.Name)).ISOCurrencySymbol)
                 .Distinct()
                 .OrderBy(x => x);
             return currencySymbols.Contains(currencyCode);
@@ -51,7 +51,7 @@ namespace TransactionApi.Server.Validations
         
         public static bool IsValidCsvDate(string dateString)
         {
-            return DateTime.TryParseExact(dateString, "dd/MM/yyyy hh:mm:ss",
+            return DateTime.TryParseExact(dateString, "dd/MM/yyyy HH:mm:ss",
                 CultureInfo.InvariantCulture,
                 DateTimeStyles.None,
                 out _);

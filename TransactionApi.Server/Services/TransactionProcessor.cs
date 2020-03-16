@@ -25,8 +25,8 @@ namespace TransactionApi.Server.Services
         {
             var contentExtension = getExtension(fUpload.Content.FileName);
             if (_registeredParsers.ContainsKey(contentExtension))
-            {
-                using StreamReader stream = new StreamReader(fUpload.Content.OpenReadStream()); 
+            { 
+                StreamReader stream = new StreamReader(fUpload.Content.OpenReadStream());
                 return _registeredParsers[contentExtension].Parse(stream);
             }
             else
