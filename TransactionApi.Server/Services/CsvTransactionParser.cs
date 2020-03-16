@@ -18,7 +18,7 @@ namespace TransactionApi.Server.Services
     public class CsvTransactionParser : ITransactionParser
     {
         public string SupportedExtension { get; } = "csv";
-        private Dictionary<string, List<ValidationResult>> _validationMap =
+        private readonly Dictionary<string, List<ValidationResult>> _validationMap =
             new Dictionary<string, List<ValidationResult>>();
 
         public async IAsyncEnumerable<Transaction> Parse(StreamReader sourceString)
