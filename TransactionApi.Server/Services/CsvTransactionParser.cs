@@ -28,9 +28,9 @@ namespace TransactionApi.Server.Services
             _validator = validator;
         }
 
-        public async IAsyncEnumerable<Transaction> Parse(StreamReader sourceString)
+        public async IAsyncEnumerable<Transaction> Parse(StreamReader sourceStream)
         {
-            using var csvReader = new CsvReader(sourceString, new CsvConfiguration(CultureInfo.InvariantCulture)
+            using var csvReader = new CsvReader(sourceStream, new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = false,
                 IgnoreBlankLines = true,

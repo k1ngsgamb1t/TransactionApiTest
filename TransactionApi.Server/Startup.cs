@@ -17,6 +17,7 @@ using TransactionApi.Server.Data;
 using TransactionApi.Server.Middleware;
 using TransactionApi.Server.Services;
 using TransactionApi.Server.Services.Interfaces;
+using TransactionApi.Server.Validations;
 
 namespace TransactionApi.Server
 {
@@ -48,6 +49,7 @@ namespace TransactionApi.Server
             services.AddScoped<ITransactionParser, CsvTransactionParser>();
             services.AddScoped<ITransactionParser, XmlTransactionParser>();
             services.AddScoped<ITransactionProcessor, TransactionProcessor>();
+            services.AddScoped<ITransactionItemValidator, TransactionItemValidator>();
             services.AddControllersWithViews();
         }
 
