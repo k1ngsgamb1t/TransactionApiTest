@@ -37,7 +37,9 @@ namespace TransactionApi.Server.Services.Formats
             [StringLength(3, ErrorMessage = "Currency code must be 3 characters long")]
             public string CurrencyCode { get; set; }
         }
-        [StringLength(50, MinimumLength = 1,ErrorMessage = "Transaction id must be at least 1 and not more than 50 characters long")]
+        
+        [Required]
+        [StringLength(50, ErrorMessage = "Transaction id must be at least 1 and not more than 50 characters long")]
         [XmlAttribute("id")]
         public string TransactionIdentificator { get; set; }
         [XmlElement("PaymentDetails")]
