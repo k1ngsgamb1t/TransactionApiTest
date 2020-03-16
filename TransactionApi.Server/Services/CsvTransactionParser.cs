@@ -43,7 +43,6 @@ namespace TransactionApi.Server.Services
             while (await csvReader.ReadAsync())
             {
                 var csvItem = csvReader.GetRecord<TransactionFormatCsv>();
-                var validationResults = new List<ValidationResult>();
                 if(_validator.TryValidateItem(csvItem))
                     yield return csvItem.ToTransactionModel();
             }

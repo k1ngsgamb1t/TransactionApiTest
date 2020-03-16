@@ -25,7 +25,6 @@ namespace TransactionApi.Server.Services
         
         public async Task ProcessTransactionsAsync(IAsyncEnumerable<Transaction> transactions)
         {
-            await using var tr = await _dbContext.Database.BeginTransactionAsync();
             try
             {
                 await foreach (var trItem in transactions)
@@ -45,12 +44,10 @@ namespace TransactionApi.Server.Services
                     }
                 }
                 await _dbContext.SaveChangesAsync();
-                await tr.CommitAsync();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error processing transactions");
-                await tr.RollbackAsync();
                 throw;
             }
         }
@@ -79,6 +76,7 @@ namespace TransactionApi.Server.Services
             }
             catch(Exception ex)
             {
+                //even we have middleware here try-catch might also be useful to log message with more context meaning
                 _logger.LogError(ex, "Error querying transactions");
                 throw;
             }

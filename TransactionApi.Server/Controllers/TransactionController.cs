@@ -38,16 +38,9 @@ namespace TransactionApi.Server.Controllers
         [Consumes("multipart/form-data")]
         public async Task<ActionResult> UploadTransactionsAsync([FromForm]FileUpload transactionsSource)
         {
-            try
-            {
-                var transactionItems =  _transactionProcessor.ProcessFile(transactionsSource);
-                await _transactionService.ProcessTransactionsAsync(transactionItems);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var transactionItems =  _transactionProcessor.ProcessFile(transactionsSource);
+            await _transactionService.ProcessTransactionsAsync(transactionItems);
+            return Ok();
         }
 
         [HttpGet]

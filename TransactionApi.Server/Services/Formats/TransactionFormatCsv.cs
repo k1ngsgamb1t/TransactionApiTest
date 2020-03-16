@@ -56,6 +56,10 @@ namespace TransactionApi.Server.Services.Formats
             {
                 results.Add(new ValidationResult("Date must be in correct format."));
             }
+            if (!ValidationHelper.IsValidAmount(this.Amount))
+            {
+                results.Add(new ValidationResult("Amount must be decimal value"));
+            }
             if (!ValidationHelper.IsValidCurrency(this.CurrencyCode))
             {
                 results.Add(new ValidationResult("Currency code is not of ISO4217 format"));

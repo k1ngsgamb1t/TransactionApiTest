@@ -33,6 +33,14 @@ namespace TransactionApi.Server.Validations
                 DateTimeStyles.None,
                 out _);
         }
+        
+        public static bool IsValidAmount(string amount)
+        {
+            return Decimal.TryParse(amount,
+                NumberStyles.Currency,
+                CultureInfo.InvariantCulture,
+                out _);
+        }
 
         public static bool IsValidCurrency(string currencyCode)
         {
