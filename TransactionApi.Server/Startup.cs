@@ -14,6 +14,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using Swashbuckle.AspNetCore.Swagger;
 using TransactionApi.Server.Data;
+using TransactionApi.Server.Middleware;
 using TransactionApi.Server.Services;
 using TransactionApi.Server.Services.Interfaces;
 
@@ -64,7 +65,7 @@ namespace TransactionApi.Server
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            
+            app.ConfigureExceptionMiddleware();
             app.UseSwagger(c =>
             {
                 c.RouteTemplate = "api/swagger/{documentName}/swagger.json";
