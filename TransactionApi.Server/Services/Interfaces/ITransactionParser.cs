@@ -7,6 +7,7 @@ namespace TransactionApi.Server.Services.Interfaces
 {
     public interface ITransactionParser
     {
+        string SupportedExtension { get; }
         IAsyncEnumerable<Transaction> Parse(StreamReader sourceString);
     }
 }

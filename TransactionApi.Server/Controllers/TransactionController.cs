@@ -20,16 +20,14 @@ namespace TransactionApi.Server.Controllers
     public class TransactionController : ControllerBase
     {
         private readonly ILogger<TransactionController> _logger;
-        private readonly ITransactionParser _csvParser;
-        private readonly ITransactionParser _xmlParser;
+        private readonly ITransactionProcessor _transactionProcessor;
         private readonly ITransactionService _transactionService;
 
         public TransactionController(ITransactionService transactionService,
-            IEnumerable<ITransactionParser> parsers,
+            ITransactionProcessor transactionProcessor,
             ILogger<TransactionController> logger)
         {
-            _csvParser = parsers.First();
-            _xmlParser = parsers.ElementAt(1);
+            _transactionProcessor = transactionProcessor;
             _transactionService = transactionService;
             this._logger = logger;
         }
@@ -42,38 +40,8 @@ namespace TransactionApi.Server.Controllers
         {
             try
             {
-                using (var reader = new StreamReader(transactionsSource.Content.OpenReadStream()))
-                {
-                    if (transactionsSource.Name.EndsWith(".csv"))
-                    {
-                        var content = await reader.ReadToEndAsync();
-                        var transactionItems = _csvParser.Parse(reader);
-                        //var validationMap = new Dictionary<string, List<ValidationResult>>();
-                        //if(await ValidationHelper.TryValidateObjectsWithKey(transactionItems,
-                        //    (csvItem) => csvItem.TransactionId,
-                        //    validationMap))
-                            await _transactionService.ProcessTransactionsAsync(transactionItems);
-                        //else
-                        //{
-                        //    return BadRequest(validationMap);
-                        //}
-                    }
-                    else
-                    {
-                       
-                        var transactionItems = _xmlParser.Parse(reader);
-                        //var validationMap = new Dictionary<string, List<ValidationResult>>();
-                        await _transactionService.ProcessTransactionsAsync(transactionItems);
-                        // if(await ValidationHelper.TryValidateObjectsWithKey(transactionItems,
-                        //     (xmlItem) => xmlItem.TransactionId,
-                        //     validationMap))
-                        //     await _transactionService.ProcessTransactionsAsync(transactionItems);
-                        // else
-                        // {
-                        //     return BadRequest(validationMap);
-                        // }
-                    }
-                }
+                var transactionItems =  _transactionProcessor.ProcessFile(transactionsSource);
+                await _transactionService.ProcessTransactionsAsync(transactionItems);
                 return Ok();
             }
             catch (Exception ex)

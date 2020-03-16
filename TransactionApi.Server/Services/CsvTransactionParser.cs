@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -7,13 +8,19 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using Newtonsoft.Json;
 using TransactionApi.Server.Data.Entities;
+using TransactionApi.Server.Exceptions;
 using TransactionApi.Server.Services.Interfaces;
 using TransactionApi.Server.Services.Formats;
+using TransactionApi.Server.Validations;
 
 namespace TransactionApi.Server.Services
 {
     public class CsvTransactionParser : ITransactionParser
     {
+        public string SupportedExtension { get; } = "csv";
+        private Dictionary<string, List<ValidationResult>> _validationMap =
+            new Dictionary<string, List<ValidationResult>>();
+
         public async IAsyncEnumerable<Transaction> Parse(StreamReader sourceString)
         {
             using var csvReader = new CsvReader(sourceString, new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -25,12 +32,23 @@ namespace TransactionApi.Server.Services
                 CountBytes = true,
                 Encoding = Encoding.UTF8
             });
-
-            var csvTransaction = new TransactionFormatCsv();
-            await foreach (var csvItem in csvReader.EnumerateRecordsAsync<TransactionFormatCsv>(csvTransaction))
+            
+            var lineNum = 1;
+            while (await csvReader.ReadAsync())
             {
-                yield return csvItem.ToTransactionModel();
+                var csvItem = csvReader.GetRecord<TransactionFormatCsv>();
+                var validationResults = new List<ValidationResult>();
+                if(Validator.TryValidateObject(csvItem, new ValidationContext(csvItem), validationResults))
+                    yield return csvItem.ToTransactionModel();
+                else
+                {
+                    _validationMap[$"line {lineNum}"] = validationResults;
+                }
+                lineNum++;
             }
+            
+            if(_validationMap.Keys.Count > 0)
+                throw new InvalidFileDataException(_validationMap);
         }
     }
 }

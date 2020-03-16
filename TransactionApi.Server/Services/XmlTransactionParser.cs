@@ -11,6 +11,8 @@ namespace TransactionApi.Server.Services
 {
     public class XmlTransactionParser : ITransactionParser
     {
+        public string SupportedExtension { get; } = "xml";
+
         public async IAsyncEnumerable<Transaction> Parse(StreamReader sourceString)
         {
             var xmlSerializer = new XmlSerializer(typeof(TransactionsList));

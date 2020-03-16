@@ -44,8 +44,9 @@ namespace TransactionApi.Server
                 xmlFiles.ForEach(xmlFile => sw.IncludeXmlComments(xmlFile));
             });
             services.AddScoped<ITransactionService, TransactionService>();
-            services.AddTransient<ITransactionParser, CsvTransactionParser>();
-            services.AddTransient<ITransactionParser, XmlTransactionParser>();
+            services.AddScoped<ITransactionParser, CsvTransactionParser>();
+            services.AddScoped<ITransactionParser, XmlTransactionParser>();
+            services.AddScoped<ITransactionProcessor, TransactionProcessor>();
             services.AddControllersWithViews();
         }
 
