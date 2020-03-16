@@ -30,19 +30,22 @@ namespace TransactionApi.Server.Services
             {
                 await foreach (var trItem in transactions)
                 {
-                    var trEntity = await _dbContext.Transaction.FindAsync(trItem);
+                    var trEntity = await _dbContext.Transaction.FindAsync(trItem.TransactionId);
                     if (trEntity != null)
                     {
-                        _dbContext.Transaction.Update(trItem);
+                        trEntity.Amount = trItem.Amount;
+                        trEntity.Currency = trItem.Currency;
+                        trEntity.Status = trItem.Status;
+                        trEntity.TransactionDate = trItem.TransactionDate;
+                        _dbContext.Transaction.Update(trEntity);
                     }
                     else
                     {
                         await _dbContext.Transaction.AddAsync(trItem);
                     }
-
-                    await _dbContext.SaveChangesAsync();
-                    await tr.CommitAsync();
                 }
+                await _dbContext.SaveChangesAsync();
+                await tr.CommitAsync();
             }
             catch (Exception ex)
             {

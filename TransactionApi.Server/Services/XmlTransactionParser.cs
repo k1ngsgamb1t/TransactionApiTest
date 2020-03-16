@@ -13,9 +13,9 @@ namespace TransactionApi.Server.Services
     {
         public async IAsyncEnumerable<Transaction> Parse(StreamReader sourceString)
         {
-            var source = await sourceString.ReadToEndAsync();
-            var xmlSerializer = new XmlSerializer(typeof(List<TransactionFormatXml>), new XmlRootAttribute("Transactions"));
-            foreach (var xmlItem in (List<TransactionFormatXml>)xmlSerializer.Deserialize(sourceString))
+            var xmlSerializer = new XmlSerializer(typeof(TransactionsList));
+            var list = (TransactionsList) xmlSerializer.Deserialize(sourceString);
+            foreach (var xmlItem in list.Transactions)
             {
                 yield return await Task.FromResult(xmlItem.ToTransactionModel());
             }

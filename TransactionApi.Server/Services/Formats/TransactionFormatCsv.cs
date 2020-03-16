@@ -12,8 +12,8 @@ namespace TransactionApi.Server.Services.Formats
     public enum TransactionStatusCsv
     {
         Approved = 0,
-        Rejected = 1,
-        Done = 2
+        Failed = 1,
+        Finished = 2
     }
 
     public class TransactionFormatCsv : IValidatableObject

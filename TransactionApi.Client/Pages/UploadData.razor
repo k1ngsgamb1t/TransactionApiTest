@@ -6,15 +6,19 @@
 
 <p>Supported file types: xml,csv</p>
 
-<InputFile OnChange="HandleSelection" accept=".xml, .csv">Upload</InputFile>
+<InputFile OnChange="@HandleSelection" accept=".xml, .csv">Upload</InputFile>
+
+<h6>@UploadStatus</h6>
 
 @code {
-    async Task HandleSelection(IFileListEntry[] fileEntries)
+    string UploadStatus = string.Empty;
+    
+    public async Task HandleSelection(IFileListEntry[] fileEntries)
     {
         var file = fileEntries.FirstOrDefault();
         if (file != null)
         {
-            var ms = new MemoryStream();
+            await using var ms = new MemoryStream();
             await file.Data.CopyToAsync(ms);
 
             //status = $"Finished loading {file.Size} bytes from {file.Name}";
@@ -24,6 +28,8 @@
                 { new ByteArrayContent(ms.GetBuffer()), "\"content\"", file.Name }
             };
             await Client.PostAsync("api/transactions/upload", content);
+            UploadStatus = "File uploaded successfully";
+            StateHasChanged();
         }
     }
 }

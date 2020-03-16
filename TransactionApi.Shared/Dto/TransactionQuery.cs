@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Text;
 
 namespace TransactionApi.Shared.Dto
@@ -21,7 +22,7 @@ namespace TransactionApi.Shared.Dto
 
             if (StartTime.HasValue && EndTime.HasValue)
             {
-                builder.Append($"&startTime={StartTime}&endTime={EndTime}");
+                builder.Append($"&startTime={StartTime.Value.ToUniversalTime()}&endTime={EndTime.Value.ToUniversalTime()}");
             }
 
             if (!string.IsNullOrEmpty(Status))

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -18,9 +19,11 @@ namespace TransactionApi.Server.Services
             using var csvReader = new CsvReader(sourceString, new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = false,
-                IgnoreQuotes = false,
+                IgnoreBlankLines = true,
                 Delimiter = ",",
-                Quote = '"'
+                TrimOptions = TrimOptions.InsideQuotes | TrimOptions.Trim,
+                CountBytes = true,
+                Encoding = Encoding.UTF8
             });
 
             var csvTransaction = new TransactionFormatCsv();

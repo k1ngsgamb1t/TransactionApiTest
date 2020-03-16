@@ -1,18 +1,33 @@
 ﻿@page "/fetchdata"
-@using TransactionApi.Shared
+@using System.Collections
+@using System.Globalization
+@using System.Reflection
 @using TransactionApi.Shared.Dto
 @inject HttpClient Http
+@using Microsoft.AspNetCore.WebUtilities;
 
-<h1>Available transactions</h1>
+<h4>Available transactions</h4>
 
-<input type="text" onchange="@CurrencyCode">Type currency code:<input/>
-<DateRangePicker @bind-StartDate="StartDate" @bind-EndDate="EndDate" />
-<select bind="@SelectedStatus">
-    <option>A</option>
-    <option>R</option>
-    <option>D</option>
-</select>
-<button onclick="OnQueryExecuting">Run Query</button>
+<div>
+    <div>
+        <h8>Select currency code:</h8>
+        <input type="text" @bind="CurrencyCode">
+    </div>
+    <div>
+        <h8>Select report date range:</h8>
+        <DateRangePicker class="form-control form-control-sm" @bind-StartDate="StartDate" @bind-EndDate="EndDate"/>
+    </div>
+    <div>
+        <h8>Select status:</h8>
+        <select @bind="SelectedStatus">
+            <option selected></option>
+            <option>A</option>
+            <option>R</option>
+            <option>D</option>
+        </select>
+    </div>
+    <button @onclick="OnQueryExecuting">Run Query</button>
+</div>
 
 @if (_transactions != null)
 {
@@ -39,22 +54,61 @@
 
 @code {
     private TransactionDto[] _transactions;
+    
     string SelectedStatus = string.Empty;
     string CurrencyCode = string.Empty;
-    DateTimeOffset? StartDate { get; set; } = DateTime.Today.AddMonths(-1);
-    DateTimeOffset? EndDate { get; set; } = DateTime.Today.AddDays(1).AddTicks(-1);
+    DateTimeOffset? StartDate { get; set; } = null;
+    DateTimeOffset? EndDate { get; set; } = null;
 
     public async Task OnQueryExecuting()
     {
         var query = new TransactionQuery()
         {
-            CurrencyCode = CurrencyCode,
-            StartTime = StartDate.Value.Date,
-            EndTime = EndDate.Value.Date,
-            Status = SelectedStatus
+            CurrencyCode = string.IsNullOrEmpty(CurrencyCode) ? null : CurrencyCode,
+            StartTime = StartDate?.UtcDateTime,
+            EndTime = EndDate?.UtcDateTime,
+            Status = string.IsNullOrEmpty(SelectedStatus) ? null : SelectedStatus
         };
-        _transactions = await Http.GetJsonAsync<TransactionDto[]>("api/transactions" + query.ToQueryString());
+        var queryString = AppendObjectToQueryString("api/transactions", query);
+        _transactions = await Http.GetJsonAsync<TransactionDto[]>(queryString);
         StateHasChanged();
+    }
+    
+    public static string AppendObjectToQueryString(string uri, object requestObject)
+    {
+        var type = requestObject.GetType();
+        var data = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .ToDictionary
+            (
+                p => p.Name,
+                p => p.GetValue(requestObject)
+            );
+
+        foreach (var d in data)
+        {
+            if (d.Value == null)
+            {
+                continue;
+            }
+
+            if ((d.Value as string == null) && d.Value is IEnumerable enumerable)
+            {
+                foreach (var value in enumerable)
+                {
+                    uri = QueryHelpers.AddQueryString(uri, d.Key, value.ToString());
+                }
+            }
+            else if(d.Value is DateTime dt)
+            {
+                uri = QueryHelpers.AddQueryString(uri, d.Key, dt.ToString("O", CultureInfo.InvariantCulture));
+            }
+            else
+            {
+                uri = QueryHelpers.AddQueryString(uri, d.Key, d.Value.ToString());
+            }
+        }
+
+        return uri;
     }
 
 }

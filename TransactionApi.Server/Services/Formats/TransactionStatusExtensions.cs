@@ -10,8 +10,8 @@ namespace TransactionApi.Server.Services.Formats
             return status switch
             {
                 TransactionStatusCsv.Approved => TransactionStatus.A,
-                TransactionStatusCsv.Rejected => TransactionStatus.R,
-                TransactionStatusCsv.Done => TransactionStatus.D,
+                TransactionStatusCsv.Failed => TransactionStatus.R,
+                TransactionStatusCsv.Finished => TransactionStatus.D,
                 _ => throw new InvalidOperationException("Incorrect csv status")
             };
         }
@@ -20,8 +20,8 @@ namespace TransactionApi.Server.Services.Formats
             return status switch
             {
                 TransactionStatusXml.Approved => TransactionStatus.A,
-                TransactionStatusXml.Failed => TransactionStatus.R,
-                TransactionStatusXml.Finished => TransactionStatus.D,
+                TransactionStatusXml.Rejected => TransactionStatus.R,
+                TransactionStatusXml.Done => TransactionStatus.D,
                 _ => throw new InvalidOperationException("Incorrect xml status")
             };
         }

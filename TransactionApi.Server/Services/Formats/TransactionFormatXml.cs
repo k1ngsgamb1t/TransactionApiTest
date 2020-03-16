@@ -12,15 +12,21 @@ namespace TransactionApi.Server.Services.Formats
     public enum TransactionStatusXml
     {
         Approved = 0,
-        Failed = 1,
-        Finished = 2
+        Rejected = 1,
+        Done = 2
+    }
+
+    [XmlRoot("Transactions")]
+    public class TransactionsList
+    {
+        [XmlElement("Transaction")]
+        public List<TransactionFormatXml> Transactions { get; set; }
     }
     
     [Serializable]
     [XmlRoot("Transaction")]
     public class TransactionFormatXml : IValidatableObject
     {
-        [Serializable]
         public class PaymentDetailsInfo
         {
             [XmlElement]
@@ -47,7 +53,7 @@ namespace TransactionApi.Server.Services.Formats
                 TransactionId = this.TransactionIdentificator,
                 Amount = this.PaymentDetails.Amount,
                 Currency = this.PaymentDetails.CurrencyCode,
-                TransactionDate = DateTime.ParseExact(this.TransactionDate, "yyyy-MM-ddThh:mm:sss",
+                TransactionDate = DateTime.ParseExact(this.TransactionDate, "yyyy-MM-ddTHH:mm:ss",
                     CultureInfo.InvariantCulture,
                     DateTimeStyles.None),
                 Status = ((TransactionStatusXml)Enum.Parse(typeof(TransactionStatusXml), this.Status)).ToModelStatus()
