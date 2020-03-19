@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using System.Xml.Serialization;
+using Microsoft.Extensions.Options;
 using TransactionApi.Server.Data.Entities;
 using TransactionApi.Server.Services.Interfaces;
 using TransactionApi.Server.Validations;
@@ -75,15 +76,18 @@ namespace TransactionApi.Server.Services.Formats
             var results = new List<ValidationResult>();
             if (!ValidationHelper.IsValidXmlDate(this.TransactionDate))
             {
-                results.Add(new ValidationResult("Date must be in correct format."));
+                results.Add(new ValidationResult("Date must be in correct format.",
+                    new[]{nameof(TransactionDate)}));
             }
             if (!ValidationHelper.IsValidCurrency(this.PaymentDetails.CurrencyCode))
             {
-                results.Add(new ValidationResult("Currency code is not of ISO4217 format"));
+                results.Add(new ValidationResult("Currency code is not of ISO4217 format",
+                    new[]{nameof(PaymentDetails.CurrencyCode)}));
             }
             if (!ValidationHelper.IsValidXmlStatus(this.Status))
             {
-                results.Add((new ValidationResult("Invalid transaction status")));
+                results.Add(new ValidationResult("Invalid transaction status", 
+                    new[]{nameof(Status)}));
             }
             return results;
         }

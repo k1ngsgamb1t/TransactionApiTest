@@ -23,7 +23,9 @@ namespace TransactionApi.Server.Services.Formats
         [Required]
         [StringLength(50, ErrorMessage = "Transaction id must be at least 1 and not more than 50 characters long")]
         public string TransactionIdentificator { get; set; }
+        
         public string Amount { get; set; }
+        
         [StringLength(3, ErrorMessage = "Currency code must be 3 characters long")]
         public string CurrencyCode { get; set; }
         public string TransactionDate { get; set; }
@@ -55,21 +57,25 @@ namespace TransactionApi.Server.Services.Formats
             var results = new List<ValidationResult>();
             if (!ValidationHelper.IsValidCsvDate(this.TransactionDate))
             {
-                results.Add(new ValidationResult("Date must be in correct format."));
+                results.Add(new ValidationResult("Date must be in correct format.",
+                    new[]{TransactionDate}));
             }
             if (!ValidationHelper.IsValidAmount(this.Amount))
             {
-                results.Add(new ValidationResult("Amount must be decimal value"));
+                results.Add(new ValidationResult("Amount must be decimal value",
+                    new[]{Amount}));
             }
             if (!ValidationHelper.IsValidCurrency(this.CurrencyCode))
             {
-                results.Add(new ValidationResult("Currency code is not of ISO4217 format"));
+                results.Add(new ValidationResult("Currency code is not of ISO4217 format",
+                    new[]{CurrencyCode}));
             }
             //some strange issue - last record in csv file is broken - need to manually fix
             this.Status = new Regex("[^a-zA-Z0-9 -]").Replace(this.Status, "");
             if (!ValidationHelper.IsValidCsvStatus(this.Status))
             {
-                results.Add((new ValidationResult("Invalid transaction status")));
+                results.Add(new ValidationResult("Invalid transaction status",
+                    new[]{Status}));
             }
             return results;
         }
